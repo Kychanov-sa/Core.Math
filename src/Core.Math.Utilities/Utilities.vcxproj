@@ -87,16 +87,18 @@
     <OutDir>$(SolutionDir)API\Lib\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <TargetName>gmu64</TargetName>
-    <OutDir>$(SolutionDir)API\Lib\</OutDir>
-    <IncludePath>$(SolutionDir)API\Include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)API\Lib;$(LibraryPath)</LibraryPath>
+    <TargetName>Core.Math.Utilities</TargetName>
+    <OutDir>bin\$(Platform)\$(Configuration)\</OutDir>
+    <IncludePath>$(SolutionDir)include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)src\Core.Math\bin\$(Platform)\$(Configuration);$(LibraryPath)</LibraryPath>
+    <IntDir>obj\$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <TargetName>gmu64d</TargetName>
-    <OutDir>$(SolutionDir)API\Lib\</OutDir>
-    <IncludePath>$(SolutionDir)API\Include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)API\Lib;$(LibraryPath)</LibraryPath>
+    <TargetName>Core.Math.Utilities</TargetName>
+    <OutDir>bin\$(Platform)\$(Configuration)\</OutDir>
+    <IncludePath>$(SolutionDir)include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)src\Core.Math\bin\$(Platform)\$(Configuration);$(LibraryPath)</LibraryPath>
+    <IntDir>obj\$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -122,9 +124,12 @@
       <SubSystem>Windows</SubSystem>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy $(ProjectDir)*.h $(SolutionDir)API\Include\gm\*.h /e /y /exclude:$(ProjectDir)DoNotPublish.txt
-xcopy $(ProjectDir)*.inl $(SolutionDir)API\Include\gm\*.inl /e /y /exclude:$(ProjectDir)DoNotPublish.txt</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
+    <Lib>
+      <AdditionalDependencies>Core.Math.lib</AdditionalDependencies>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -158,16 +163,14 @@ xcopy $(ProjectDir)*.inl $(SolutionDir)API\Include\gm\*.inl /e /y /exclude:$(Pro
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy $(ProjectDir)*.h $(SolutionDir)API\Include\gm\*.h /e /y /exclude:$(ProjectDir)DoNotPublish.txt
-xcopy $(ProjectDir)*.inl $(SolutionDir)API\Include\gm\*.inl /e /y /exclude:$(ProjectDir)DoNotPublish.txt</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
+    <Lib>
+      <AdditionalDependencies>Core.Math.lib</AdditionalDependencies>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <Text Include="DoNotPublish.txt" />
-    <Text Include="ReadMe.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="gmu.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
@@ -175,7 +178,6 @@ xcopy $(ProjectDir)*.inl $(SolutionDir)API\Include\gm\*.inl /e /y /exclude:$(Pro
     <ClCompile Include="AffineTransformation.cpp" />
     <ClCompile Include="BaseNoiseGenerator.cpp" />
     <ClCompile Include="DualQuaternion.cpp" />
-    <ClCompile Include="Utilities.cpp" />
     <ClCompile Include="Matrix2x2.cpp" />
     <ClCompile Include="Matrix3x3.cpp" />
     <ClCompile Include="Matrix4x4.cpp" />

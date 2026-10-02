@@ -24,164 +24,167 @@ static float	g1[GMUNOISE_B + GMUNOISE_B + 2];
 
 namespace GlacialBytes
 {
-	namespace OpenGm
+	namespace Core
 	{
-		namespace Utilities
+		namespace Math
 		{
-			SimpleNoiseGenerator::SimpleNoiseGenerator(int seed)
+			namespace Utilities
 			{
-				int i, j, k;
-
-				srand(seed);
-				for (i = 0; i < GMUNOISE_B; ++i)
+				SimpleNoiseGenerator::SimpleNoiseGenerator(int seed)
 				{
-					p[i] = i;
-					g1[i] = (float)((rand() % (GMUNOISE_B + GMUNOISE_B)) - GMUNOISE_B) / GMUNOISE_B;
+					int i, j, k;
 
-					for (j = 0; j < 2; ++j)
-						g2[i][j] = (float)((rand() % (GMUNOISE_B + GMUNOISE_B)) - GMUNOISE_B) / GMUNOISE_B;
-					normalize2((float2&)g2[i]);
+					srand(seed);
+					for (i = 0; i < GMUNOISE_B; ++i)
+					{
+						p[i] = i;
+						g1[i] = (float)((rand() % (GMUNOISE_B + GMUNOISE_B)) - GMUNOISE_B) / GMUNOISE_B;
 
-					for (j = 0; j < 3; ++j)
-						g3[i][j] = (float)((rand() % (GMUNOISE_B + GMUNOISE_B)) - GMUNOISE_B) / GMUNOISE_B;
-					normalize3((float3&)g3[i]);
+						for (j = 0; j < 2; ++j)
+							g2[i][j] = (float)((rand() % (GMUNOISE_B + GMUNOISE_B)) - GMUNOISE_B) / GMUNOISE_B;
+						normalize2((float2&)g2[i]);
+
+						for (j = 0; j < 3; ++j)
+							g3[i][j] = (float)((rand() % (GMUNOISE_B + GMUNOISE_B)) - GMUNOISE_B) / GMUNOISE_B;
+						normalize3((float3&)g3[i]);
+					}
+
+					while (--i)
+					{
+						k = p[i];
+						p[i] = p[j = rand() % GMUNOISE_B];
+						p[j] = k;
+					}
+
+					for (i = 0; i < GMUNOISE_B + 2; ++i)
+					{
+						p[GMUNOISE_B + i] = p[i];
+						g1[GMUNOISE_B + i] = g1[i];
+						for (j = 0; j < 2; ++j)
+							g2[GMUNOISE_B + i][j] = g2[i][j];
+						for (j = 0; j < 3; ++j)
+							g3[GMUNOISE_B + i][j] = g3[i][j];
+					}
 				}
 
-				while (--i)
+				SimpleNoiseGenerator::~SimpleNoiseGenerator()
 				{
-					k = p[i];
-					p[i] = p[j = rand() % GMUNOISE_B];
-					p[j] = k;
+
 				}
 
-				for (i = 0; i < GMUNOISE_B + 2; ++i)
+				float SimpleNoiseGenerator::NextValue(const float s)
 				{
-					p[GMUNOISE_B + i] = p[i];
-					g1[GMUNOISE_B + i] = g1[i];
-					for (j = 0; j < 2; ++j)
-						g2[GMUNOISE_B + i][j] = g2[i][j];
-					for (j = 0; j < 3; ++j)
-						g3[GMUNOISE_B + i][j] = g3[i][j];
+					int		bx0, bx1;
+					float	rx0, rx1, sx, t, u, v;
+
+					coord_setup(s, bx0, bx1, rx0, rx1);
+
+					sx = s_curve(rx0);
+					u = rx0 * g1[p[bx0]];
+					v = rx1 * g1[p[bx1]];
+					return ab_lerp(sx, u, v);
 				}
-			}
 
-			SimpleNoiseGenerator::~SimpleNoiseGenerator()
-			{
+				float SimpleNoiseGenerator::NextValue(const float2& v)
+				{
+					int		bx0, bx1, by0, by1, b00, b10, b01, b11;
+					float	rx0, rx1, ry0, ry1, * q, sx, sy, a, b, t, u, v;
+					int		i, j;
 
-			}
+					coord_setup(pnt.x, bx0, bx1, rx0, rx1);
+					coord_setup(pnt.y, by0, by1, ry0, ry1);
 
-			float SimpleNoiseGenerator::NextValue(const float s)
-			{
-				int		bx0, bx1;
-				float	rx0, rx1, sx, t, u, v;
+					i = p[bx0];
+					j = p[bx1];
 
-				coord_setup(s, bx0, bx1, rx0, rx1);
+					b00 = p[i + by0];
+					b10 = p[j + by0];
+					b01 = p[i + by1];
+					b11 = p[j + by1];
 
-				sx = s_curve(rx0);
-				u = rx0 * g1[p[bx0]];
-				v = rx1 * g1[p[bx1]];
-				return ab_lerp(sx, u, v);
-			}
-
-			float SimpleNoiseGenerator::NextValue(const float2& v)
-			{
-				int		bx0, bx1, by0, by1, b00, b10, b01, b11;
-				float	rx0, rx1, ry0, ry1, * q, sx, sy, a, b, t, u, v;
-				int		i, j;
-
-				coord_setup(pnt.x, bx0, bx1, rx0, rx1);
-				coord_setup(pnt.y, by0, by1, ry0, ry1);
-
-				i = p[bx0];
-				j = p[bx1];
-
-				b00 = p[i + by0];
-				b10 = p[j + by0];
-				b01 = p[i + by1];
-				b11 = p[j + by1];
-
-				sx = s_curve(rx0);
-				sy = s_curve(ry0);
+					sx = s_curve(rx0);
+					sy = s_curve(ry0);
 
 
-				q = g2[b00]; u = at2(rx0, ry0);
-				q = g2[b10]; v = at2(rx1, ry0);
-				a = ab_lerp(sx, u, v);
+					q = g2[b00]; u = at2(rx0, ry0);
+					q = g2[b10]; v = at2(rx1, ry0);
+					a = ab_lerp(sx, u, v);
 
-				q = g2[b01]; u = at2(rx0, ry1);
-				q = g2[b11]; v = at2(rx1, ry1);
-				b = ab_lerp(sx, u, v);
+					q = g2[b01]; u = at2(rx0, ry1);
+					q = g2[b11]; v = at2(rx1, ry1);
+					b = ab_lerp(sx, u, v);
 
-				return ab_lerp(sy, a, b);
-			}
+					return ab_lerp(sy, a, b);
+				}
 
-			float SimpleNoiseGenerator::NextValue(const float3& v)
-			{
-				int		bx0, bx1, by0, by1, bz0, bz1, b00, b10, b01, b11;
-				float	rx0, rx1, ry0, ry1, rz0, rz1, * q, sy, sz, a, b, c, d, t, u, v;
-				int		i, j;
+				float SimpleNoiseGenerator::NextValue(const float3& v)
+				{
+					int		bx0, bx1, by0, by1, bz0, bz1, b00, b10, b01, b11;
+					float	rx0, rx1, ry0, ry1, rz0, rz1, * q, sy, sz, a, b, c, d, t, u, v;
+					int		i, j;
 
-				coord_setup(pnt.x, bx0, bx1, rx0, rx1);
-				coord_setup(pnt.y, by0, by1, ry0, ry1);
-				coord_setup(pnt.z, bz0, bz1, rz0, rz1);
+					coord_setup(pnt.x, bx0, bx1, rx0, rx1);
+					coord_setup(pnt.y, by0, by1, ry0, ry1);
+					coord_setup(pnt.z, bz0, bz1, rz0, rz1);
 
-				i = p[bx0];
-				j = p[bx1];
+					i = p[bx0];
+					j = p[bx1];
 
-				b00 = p[i + by0];
-				b10 = p[j + by0];
-				b01 = p[i + by1];
-				b11 = p[j + by1];
+					b00 = p[i + by0];
+					b10 = p[j + by0];
+					b01 = p[i + by1];
+					b11 = p[j + by1];
 
-				t = s_curve(rx0);
-				sy = s_curve(ry0);
-				sz = s_curve(rz0);
+					t = s_curve(rx0);
+					sy = s_curve(ry0);
+					sz = s_curve(rz0);
 
-				q = g3[b00 + bz0]; u = at3(rx0, ry0, rz0);
-				q = g3[b10 + bz0]; v = at3(rx1, ry0, rz0);
-				a = ab_lerp(t, u, v);
+					q = g3[b00 + bz0]; u = at3(rx0, ry0, rz0);
+					q = g3[b10 + bz0]; v = at3(rx1, ry0, rz0);
+					a = ab_lerp(t, u, v);
 
-				q = g3[b01 + bz0]; u = at3(rx0, ry1, rz0);
-				q = g3[b11 + bz0]; v = at3(rx1, ry1, rz0);
-				b = ab_lerp(t, u, v);
+					q = g3[b01 + bz0]; u = at3(rx0, ry1, rz0);
+					q = g3[b11 + bz0]; v = at3(rx1, ry1, rz0);
+					b = ab_lerp(t, u, v);
 
-				c = ab_lerp(sy, a, b);
+					c = ab_lerp(sy, a, b);
 
-				q = g3[b00 + bz1]; u = at3(rx0, ry0, rz1);
-				q = g3[b10 + bz1]; v = at3(rx1, ry0, rz1);
-				a = ab_lerp(t, u, v);
+					q = g3[b00 + bz1]; u = at3(rx0, ry0, rz1);
+					q = g3[b10 + bz1]; v = at3(rx1, ry0, rz1);
+					a = ab_lerp(t, u, v);
 
-				q = g3[b01 + bz1]; u = at3(rx0, ry1, rz1);
-				q = g3[b11 + bz1]; v = at3(rx1, ry1, rz1);
-				b = ab_lerp(t, u, v);
+					q = g3[b01 + bz1]; u = at3(rx0, ry1, rz1);
+					q = g3[b11 + bz1]; v = at3(rx1, ry1, rz1);
+					b = ab_lerp(t, u, v);
 
-				d = ab_lerp(sy, a, b);
+					d = ab_lerp(sy, a, b);
 
-				return ab_lerp(sz, c, d);
-			}
+					return ab_lerp(sz, c, d);
+				}
 
-			float SimpleNoiseGenerator::NextTileableValue(const float s, float w)
-			{
-				return (NextValue(s) * (w - s) +
-					NextValue(s - w) * s) / w;
-			}
-			float SimpleNoiseGenerator::NextTileableValue(const float2& v, float w, float h)
-			{
-				return (NextValue(float2(v.x, v.y)) * (w - v.x) * (h - v.y) +
-					NextValue(float2(v.x - w, v.y)) * v.x * (h - v.y) +
-					NextValue(float2(v.x, v.y - h)) * (w - v.x) * v.y +
-					NextValue(float2(v.x - w, v.y - h)) * v.x * v.y) / (w * h);
-			}
-			float SimpleNoiseGenerator::NextTileableValue(const float3& v, float w, float h, float d)
-			{
-				return (NextValue(float3(v.x, v.y, v.z)) * (w - v.x) * (h - v.y) * (d - v.z) +
-					NextValue(float3(v.x - w, v.y, v.z)) * v.x * (h - v.y) * (d - v.z) +
-					NextValue(float3(v.x, v.y - h, v.z)) * (w - v.x) * v.y * (d - v.z) +
-					NextValue(float3(v.x - w, v.y - h, v.z)) * v.x * v.y * (d - v.z) +
-					NextValue(float3(v.x, v.y, v.z - d)) * (w - v.x) * (h - v.y) * v.z +
-					NextValue(float3(v.x - w, v.y, v.z - d)) * v.x * (h - v.y) * v.z +
-					NextValue(float3(v.x, v.y - h, v.z - d)) * (w - v.x) * v.y * v.z +
-					NextValue(float3(v.x - w, v.y - h, v.z - d)) * v.x * v.y * v.z) / (w * h * d);
+				float SimpleNoiseGenerator::NextTileableValue(const float s, float w)
+				{
+					return (NextValue(s) * (w - s) +
+						NextValue(s - w) * s) / w;
+				}
+				float SimpleNoiseGenerator::NextTileableValue(const float2& v, float w, float h)
+				{
+					return (NextValue(float2(v.x, v.y)) * (w - v.x) * (h - v.y) +
+						NextValue(float2(v.x - w, v.y)) * v.x * (h - v.y) +
+						NextValue(float2(v.x, v.y - h)) * (w - v.x) * v.y +
+						NextValue(float2(v.x - w, v.y - h)) * v.x * v.y) / (w * h);
+				}
+				float SimpleNoiseGenerator::NextTileableValue(const float3& v, float w, float h, float d)
+				{
+					return (NextValue(float3(v.x, v.y, v.z)) * (w - v.x) * (h - v.y) * (d - v.z) +
+						NextValue(float3(v.x - w, v.y, v.z)) * v.x * (h - v.y) * (d - v.z) +
+						NextValue(float3(v.x, v.y - h, v.z)) * (w - v.x) * v.y * (d - v.z) +
+						NextValue(float3(v.x - w, v.y - h, v.z)) * v.x * v.y * (d - v.z) +
+						NextValue(float3(v.x, v.y, v.z - d)) * (w - v.x) * (h - v.y) * v.z +
+						NextValue(float3(v.x - w, v.y, v.z - d)) * v.x * (h - v.y) * v.z +
+						NextValue(float3(v.x, v.y - h, v.z - d)) * (w - v.x) * v.y * v.z +
+						NextValue(float3(v.x - w, v.y - h, v.z - d)) * v.x * v.y * v.z) / (w * h * d);
+				}
 			}
 		}
 	}

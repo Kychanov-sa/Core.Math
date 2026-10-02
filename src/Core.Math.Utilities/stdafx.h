@@ -5,14 +5,11 @@
 
 #pragma once
 
-#include <stdlib.h>
-#include <math.h>
-#include <gm\gm.h>
+//#include <stdlib.h>
+//#include <math.h>
+#include <Core/Math/gm.h>
 
 #include "targetver.h"
 
-#define WIN32_LEAN_AND_MEAN             // Exclude rarely-used stuff from Windows headers
-
-
-// TODO: reference additional headers your program requires here
-#include "gmu.h"
+#define GM_BUILDING_LIB
+#include "Core/Math/gmu.h"

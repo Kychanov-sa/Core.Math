@@ -24,21 +24,24 @@ static float	g1[GMUNOISE_B + GMUNOISE_B + 2];
 
 namespace GlacialBytes
 {
-	namespace OpenGm
+	namespace Core
 	{
-		namespace Utilities
+		namespace Math
 		{
-			BaseNoiseGenerator::BaseNoiseGenerator()
+			namespace Utilities
 			{
-				p = new int[GMUNOISE_B + GMUNOISE_B + 2];
-				g3 = new float[GMUNOISE_B + GMUNOISE_B + 2][3];
-				g2 = new float[GMUNOISE_B + GMUNOISE_B + 2][2];
-				g1 = new float[GMUNOISE_B + GMUNOISE_B + 2];
-			}
+				BaseNoiseGenerator::BaseNoiseGenerator()
+				{
+					p = new int[GMUNOISE_B + GMUNOISE_B + 2];
+					g3 = new float[GMUNOISE_B + GMUNOISE_B + 2][3];
+					g2 = new float[GMUNOISE_B + GMUNOISE_B + 2][2];
+					g1 = new float[GMUNOISE_B + GMUNOISE_B + 2];
+				}
 
-			BaseNoiseGenerator::~BaseNoiseGenerator()
-			{
+				BaseNoiseGenerator::~BaseNoiseGenerator()
+				{
 
+				}
 			}
 		}
 	}

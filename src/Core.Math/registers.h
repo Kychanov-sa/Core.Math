@@ -1,6 +1,6 @@
 #pragma once
 
-#include "gm.h"
+#include "Core/Math/gm.h"
 
 namespace GlacialBytes
 {
