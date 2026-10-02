@@ -80,8 +80,9 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <TargetName>Core.Math</TargetName>
-    <CustomBuildAfterTargets>Build</CustomBuildAfterTargets>
-    <IncludePath>$(SolutionDir)API\Include;$(IncludePath)</IncludePath>
+    <CustomBuildAfterTargets>
+    </CustomBuildAfterTargets>
+    <IncludePath>$(SolutionDir)include\Core\Math;$(IncludePath)</IncludePath>
     <OutDir>bin\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>obj\$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
@@ -92,9 +93,11 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <TargetName>Core.Math</TargetName>
-    <IncludePath>$(SolutionDir)include;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)include\Core\Math;$(IncludePath)</IncludePath>
     <OutDir>bin\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>obj\$(Platform)\$(Configuration)\</IntDir>
+    <CustomBuildAfterTargets>
+    </CustomBuildAfterTargets>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -133,9 +136,8 @@ xcopy $(ProjectDir)*.inl $(SolutionDir)API\Include\gm\*.inl /e /y /exclude:$(Pro
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <CustomBuildStep>
-      <Command>xcopy $(ProjectDir)gm.h $(SolutionDir)API\Include\gm\gm.h
-xcopy $(ProjectDir)gmshuf.h $(SolutionDir)API\Include\gm\gmshuf.h
-xcopy $(ProjectDir)gmtypes.h $(SolutionDir)API\Include\gm\gmtypes.h</Command>
+      <Command>
+      </Command>
     </CustomBuildStep>
     <PostBuildEvent>
       <Command>xcopy $(ProjectDir)*.h $(SolutionDir)API\Include\gm\*.h /e /y /exclude:$(ProjectDir)DoNotPublish.txt
@@ -182,21 +184,14 @@ xcopy $(ProjectDir)*.inl $(SolutionDir)API\Include\gm\*.inl /e /y /exclude:$(Pro
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy $(ProjectDir)*.h $(SolutionDir)include\Core.Math\*.h /e /y /exclude:$(ProjectDir)DoNotPublish.txt
-xcopy $(ProjectDir)*.inl $(SolutionDir)API\Include\gm\*.inl /e /y /exclude:$(ProjectDir)DoNotPublish.txt</Command>
+      <Command>xcopy $(ProjectDir)bin\$(Platform)\$(Configuration)\Core.Math.lib $(SolutionDir)build\</Command>
     </PostBuildEvent>
+    <CustomBuildStep>
+      <Command>
+      </Command>
+    </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <Text Include="DoNotPublish.txt" />
-    <Text Include="ReadMe.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="gm.h" />
-    <ClInclude Include="gmshuf.h" />
-    <ClInclude Include="gmtypes.h" />
-    <ClInclude Include="gmfuncs_clang.h" />
-    <ClInclude Include="gmfuncs_fpu.h" />
-    <ClInclude Include="gmfuncs_sse.h" />
     <ClInclude Include="registers.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
@@ -214,12 +209,6 @@ xcopy $(ProjectDir)*.inl $(SolutionDir)API\Include\gm\*.inl /e /y /exclude:$(Pro
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="gmconvert.inl" />
-    <None Include="gmshuf.inl" />
-    <None Include="gmtypes.inl" />
-    <None Include="gmfuncs.inl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

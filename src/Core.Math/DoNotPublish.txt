@@ -1,3 +1,0 @@
-stdafx.h
-targetver.h
-registers.h
